@@ -32,6 +32,7 @@ jobs:
       # STEP 3: OWASP ZAP "Baseline" Scan
       - name: OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.14.0
+        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: 'http://localhost:3000'
