@@ -8,15 +8,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # STEP 1: Scan the pre-built vulnerable image with Trivy
-      - name: Run Trivy Image Scan
-        uses: aquasecurity/trivy-action@v0.35.0
-        with:
-          image-ref: 'bkimminich/juice-shop:latest'
-          format: 'table'
-          severity: 'HIGH,CRITICAL'
-          exit-code: '0' # Don't fail the build yet, we want to see the mess!
-
       # STEP 2: Start Juice Shop in the background
       - name: Launch Juice Shop
         run: |
@@ -31,3 +22,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: 'http://localhost:3000'
           fail_action: false # Keep it running so we can see the full report
+
+      - name: Run Trivy Image Scan
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          image-ref: 'bkimminich/juice-shop:latest'
+          format: 'table'
+          # Remove filters to see EVERYTHING
+          severity: 'LOW,MEDIUM,HIGH,CRITICAL' 
+          vuln-type: 'os,library'
+          exit-code: '0'
+        
