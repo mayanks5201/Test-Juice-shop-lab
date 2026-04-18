@@ -21,7 +21,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Automatically provided by GitHub
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # This is the secret you just added
-          with:
+        with:
           args: >
             -Dsonar.projectKey=mayanks5201_Test-Juice-shop-lab
             -Dsonar.organization=mayanks5201
