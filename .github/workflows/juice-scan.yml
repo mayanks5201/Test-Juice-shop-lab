@@ -1,0 +1,33 @@
+name: OWASP Juice Shop Attack Lab
+on: [push, workflow_dispatch]
+
+jobs:
+  security-lab:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # STEP 1: Scan the pre-built vulnerable image with Trivy
+      - name: Run Trivy Image Scan
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          image-ref: 'bkimminich/juice-shop:latest'
+          format: 'table'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '0' # Don't fail the build yet, we want to see the mess!
+
+      # STEP 2: Start Juice Shop in the background
+      - name: Launch Juice Shop
+        run: |
+          docker run -d -p 3000:3000 bkimminich/juice-shop:latest
+          # Give it 30 seconds to fully load the database and server
+          sleep 30
+
+      # STEP 3: OWASP ZAP "Baseline" Scan
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: 'http://localhost:3000'
+          fail_action: false # Keep it running so we can see the full report
